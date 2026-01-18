@@ -84,16 +84,12 @@ app.config.from_object(Config)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL:
-    # 🚀 Production (Railway / Postgres)
-    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL.replace(
-        "postgres://", "postgresql://"
-    )
-else:
-    # 🧪 Local development (SQLite)
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "sqlite:///" + os.path.join(BASE_DIR, "instance", "guzone.db")
-    )
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is not set. Postgres is required in production.")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL.replace(
+    "postgres://", "postgresql://"
+)
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # ===============================
